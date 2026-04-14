@@ -81,6 +81,52 @@ class Settings
     }
 
     /**
+     * Flatten nested field_group entries into a key => field map (leaf fields only).
+     *
+     * @param array<int, array<string, mixed>> $fields
+     * @return array<string, array<string, mixed>>
+     */
+    private function flattenFieldDefinitions(array $fields): array
+    {
+        $out = [];
+
+        foreach ($fields as $field) {
+            if (($field['type'] ?? '') === 'field_group' && !empty($field['fields']) && is_array($field['fields'])) {
+                $out = array_merge($out, $this->flattenFieldDefinitions($field['fields']));
+            } elseif (isset($field['key'])) {
+                $out[$field['key']] = $field;
+            }
+        }
+
+        return $out;
+    }
+
+    /**
+     * Collect default values from a field tree (handles field_group nesting).
+     *
+     * @param array<string, mixed> $field
+     * @return array<string, mixed>
+     */
+    private function collectDefaultFields(array $field): array
+    {
+        if (($field['type'] ?? '') === 'field_group' && !empty($field['fields']) && is_array($field['fields'])) {
+            $defaults = [];
+
+            foreach ($field['fields'] as $sub) {
+                $defaults = array_merge($defaults, $this->collectDefaultFields($sub));
+            }
+
+            return $defaults;
+        }
+
+        if (isset($field['key']) && array_key_exists('default', $field)) {
+            return [$field['key'] => $field['default']];
+        }
+
+        return [];
+    }
+
+    /**
      * Get all field definitions from the stored config
      *
      * @return array
@@ -88,19 +134,15 @@ class Settings
     private function getFieldDefinitions()
     {
         $fields = [];
-        
+
         foreach ($this->config['tabs'] as $tab) {
             foreach ($tab['sections'] as $section) {
                 if (isset($section['fields'])) {
-                    foreach ($section['fields'] as $field) {
-                        if (isset($field['key'])) {
-                            $fields[$field['key']] = $field;
-                        }
-                    }
+                    $fields = array_merge($fields, $this->flattenFieldDefinitions($section['fields']));
                 }
             }
         }
-        
+
         return $fields;
     }
 
@@ -205,19 +247,17 @@ class Settings
     public function getDefaultSettings(): array
     {
         $defaults = [];
-        
+
         foreach ($this->config['tabs'] as $tab) {
             foreach ($tab['sections'] as $section) {
                 if (isset($section['fields'])) {
                     foreach ($section['fields'] as $field) {
-                        if (isset($field['key']) && isset($field['default'])) {
-                            $defaults[$field['key']] = $field['default'];
-                        }
+                        $defaults = array_merge($defaults, $this->collectDefaultFields($field));
                     }
                 }
             }
         }
-        
+
         return $defaults;
     }
 
@@ -397,12 +437,27 @@ class Settings
     }
 
     /**
+     * Stored settings merged with schema defaults so keys never saved to the option
+     * still resolve for the REST UI (e.g. booleans defaulting to true).
+     *
+     * @return array<string, mixed>
+     */
+    private function getSettingsMergedWithDefaults(): array
+    {
+        $stored = self::get();
+        if (!is_array($stored)) {
+            $stored = [];
+        }
+
+        return array_merge($this->getDefaultSettings(), $stored);
+    }
+
+    /**
      * Get the current settings
      */
     public function getSettings()
     {
-        $settings = self::get();
-        return rest_ensure_response($settings);
+        return rest_ensure_response($this->getSettingsMergedWithDefaults());
     }
 
     /**
@@ -419,7 +474,7 @@ class Settings
 
             return rest_ensure_response([
                 'success' => true,
-                'settings' => self::get(),
+                'settings' => $this->getSettingsMergedWithDefaults(),
             ]);
         } catch (\Throwable $e) {
             return rest_ensure_response([

@@ -29,9 +29,10 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 interface Field {
-  key: string;
+  /** Setting key; omitted only for non-persisted containers (not used). */
+  key?: string;
   type: string;
-  label: string;
+  label?: string;
   description?: string;
   default?: any;
   options?: { value: string; label: string }[];
@@ -39,6 +40,10 @@ interface Field {
   min?: number;
   max?: number;
   step?: number;
+  /** Nested fields (type `field_group`). */
+  fields?: Field[];
+  /** When true with `field_group`, children are shown in a bordered panel. */
+  boxed?: boolean;
 }
 
 interface Section {
@@ -159,6 +164,196 @@ export default function SettingsPanel() {
     setSaving(false);
   }
 
+  function renderSchemaField(field: Field, path: string): React.ReactNode {
+    const vals = settings ?? {};
+
+    if (field.type === 'field_group' && field.fields?.length) {
+      const gid = field.key ?? path;
+      const inner = (
+        <div className="space-y-7">
+          {field.fields.map((sub, i) => renderSchemaField(sub, `${gid}-${i}`))}
+        </div>
+      );
+      return (
+        <div key={gid} className="flex flex-col gap-3 md:flex-row md:items-start md:gap-8">
+          <label className="block font-medium min-w-[200px] text-base pt-0.5">
+            {field.label ?? ''}
+          </label>
+          <div className="flex-1 min-w-0 space-y-3">
+            {field.description ? (
+              <div className="text-sm text-muted-foreground">{field.description}</div>
+            ) : null}
+            {field.boxed ? (
+              <div className="rounded-lg border border-border bg-muted/30 p-6">{inner}</div>
+            ) : (
+              inner
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    if (field.type === 'adapters') {
+      if (!adapters) {
+        return (
+          <div key={field.key} className="flex flex-col gap-6">
+            <Skeleton className="h-6 w-40 mb-2 rounded" />
+            <Skeleton className="h-6 w-40 mb-2 rounded" />
+          </div>
+        );
+      }
+      return (
+        <div key={field.key} className="flex flex-col gap-6">
+          {(!adapters || adapters.length === 0) ? (
+            <Alert variant="info" className="mb-4">
+              <InfoIcon />
+              <AlertDescription>
+                {__('Supported adapters will be shown here automatically when they are available.', 'worddown')}
+              </AlertDescription>
+            </Alert>
+          ) : (
+            adapters.map(adapter => (
+              <div key={adapter.slug} className="flex flex-col gap-3 md:flex-row md:items-start md:gap-8">
+                <label className="block font-medium min-w-[200px] text-base">
+                  {adapter.label}
+                </label>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      checked={!!vals[`include_${adapter.slug}`]}
+                      onCheckedChange={val => handleChange(`include_${adapter.slug}`, val)}
+                      id={`switch-include-${adapter.slug}`}
+                    />
+                    {adapter.description && (
+                      <label htmlFor={`switch-include-${adapter.slug}`} className="text-sm font-normal cursor-pointer select-none">{adapter.description}</label>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      );
+    }
+
+    const leafKey = field.key;
+    if (!leafKey) {
+      return null;
+    }
+
+    return (
+      <div key={leafKey} className="flex flex-col gap-3 md:flex-row md:items-start md:gap-8">
+        <label className="block font-medium min-w-[200px] text-base">
+          {field.label}
+        </label>
+        <div className="flex-1">
+          {field.type === 'boolean' && (
+            <div className="flex items-center gap-2">
+              <Switch
+                checked={!!vals[leafKey]}
+                onCheckedChange={val => handleChange(leafKey, val)}
+                id={`switch-${leafKey}`}
+              />
+
+              <label htmlFor={`switch-${leafKey}`} className="text-sm font-normal cursor-pointer select-none">
+                {field.switch_label || field.label}
+              </label>
+            </div>
+          )}
+          {field.type === 'text' && (
+            <Input
+              type="text"
+              value={vals[leafKey] || ''}
+              onChange={e => handleChange(leafKey, e.target.value)}
+            />
+          )}
+          {field.type === 'number' && (
+            <Input
+              type="number"
+              min={field.min}
+              max={field.max}
+              step={field.step}
+              value={vals[leafKey] !== undefined ? vals[leafKey] : field.default || 0}
+              onChange={e => {
+                const value = e.target.value;
+                if (value === '') {
+                  handleChange(leafKey, field.default || 0);
+                } else {
+                  const numValue = parseInt(value, 10);
+                  if (!isNaN(numValue)) {
+                    handleChange(leafKey, numValue);
+                  }
+                }
+              }}
+              className="w-32"
+            />
+          )}
+          {field.type === 'time' && (
+            <Input
+              type="time"
+              id={`time-picker-${leafKey}`}
+              step="1"
+              value={vals[leafKey] || ''}
+              onChange={e => handleChange(leafKey, e.target.value)}
+              className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
+            />
+          )}
+          {field.type === 'select' && (
+            <Select
+              value={vals[leafKey] || field.default}
+              onValueChange={val => handleChange(leafKey, val)}
+              options={field.options || []}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder={field.label} />
+              </SelectTrigger>
+              <SelectContent>
+                {field.options && field.options.map(opt => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+          {field.type === 'post_types' && (
+            <div className="space-y-2">
+              {postTypeOptions.map(opt => {
+                const checked = Array.isArray(vals[leafKey]) && vals[leafKey].includes(opt.value);
+                return (
+                  <div key={opt.value} className="flex items-center gap-2">
+                    <Switch
+                      checked={checked}
+                      onCheckedChange={val => {
+                        setSettings(prev => {
+                          const safePrev = prev || {};
+                          const current = Array.isArray(safePrev[leafKey]) ? safePrev[leafKey] : [];
+                          return {
+                            ...safePrev,
+                            [leafKey]: val
+                              ? [...current, opt.value]
+                              : current.filter((v: string) => v !== opt.value)
+                          };
+                        });
+                      }}
+                      id={`switch-${leafKey}-${opt.value}`}
+                    />
+                    <label htmlFor={`switch-${leafKey}-${opt.value}`} className="text-sm cursor-pointer font-normal select-none">
+                      {opt.label}
+                    </label>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+          {field.description && (
+            <div className="text-xs text-muted-foreground mt-3">{field.description}</div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   if (loading) return (
     <div className="worddown-settings-panel mt-4">
       <form className="max-w-5xl space-y-0">
@@ -271,162 +466,9 @@ export default function SettingsPanel() {
 
                       {section.fields && (
                         <div className="space-y-7">
-                          {section.fields.map(field => {
-                            if (field.type === 'adapters') {
-                              if (!adapters) {
-                                return (
-                                  <div key={field.key} className="flex flex-col gap-6">
-                                    <Skeleton className="h-6 w-40 mb-2 rounded" />
-                                    <Skeleton className="h-6 w-40 mb-2 rounded" />
-                                  </div>
-                                );
-                              }
-                              return (
-                                <div key={field.key} className="flex flex-col gap-6">
-                                  {(!adapters || adapters.length === 0) ? (
-                                    <Alert variant="info" className="mb-4">
-                                      <InfoIcon />
-                                      <AlertDescription>
-                                        {__('Supported adapters will be shown here automatically when they are available.', 'worddown')}
-                                      </AlertDescription>
-                                    </Alert>
-                                  ) : (
-                                    adapters.map(adapter => (
-                                      <div key={adapter.slug} className="flex flex-col gap-3 md:flex-row md:items-start md:gap-8">
-                                        <label className="block font-medium min-w-[200px] text-base">
-                                          {adapter.label}
-                                        </label>
-                                        <div className="flex-1">
-                                          <div className="flex items-center gap-2">
-                                            <Switch
-                                              checked={!!settings[`include_${adapter.slug}`]}
-                                              onCheckedChange={val => handleChange(`include_${adapter.slug}`, val)}
-                                              id={`switch-include-${adapter.slug}`}
-                                            />
-                                            {adapter.description && (
-                                              <label htmlFor={`switch-include-${adapter.slug}`} className="text-sm font-normal cursor-pointer select-none">{adapter.description}</label>
-                                            )}
-                                          </div>
-                                        </div>
-                                      </div>
-                                    ))
-                                  )}
-                                </div>
-                              );
-                            }
-                            return (
-                              <div key={field.key} className="flex flex-col gap-3 md:flex-row md:items-start md:gap-8">
-                                <label className="block font-medium min-w-[200px] text-base">
-                                  {field.label}
-                                </label>
-                                <div className="flex-1">
-                                  {/* Render field based on type */}
-                                  {field.type === 'boolean' && (
-                                    <div className="flex items-center gap-2">
-                                      <Switch
-                                        checked={!!settings[field.key]}
-                                        onCheckedChange={val => handleChange(field.key, val)}
-                                        id={`switch-${field.key}`}
-                                      />
-
-                                      <label htmlFor={`switch-${field.key}`} className="text-sm font-normal cursor-pointer select-none">
-                                        {field.switch_label || field.label}
-                                      </label>
-                                    </div>
-                                  )}
-                                  {field.type === 'text' && (
-                                    <Input
-                                      type="text"
-                                      value={settings[field.key] || ''}
-                                      onChange={e => handleChange(field.key, e.target.value)}
-                                    />
-                                  )}
-                                  {field.type === 'number' && (
-                                    <Input
-                                      type="number"
-                                      min={field.min}
-                                      max={field.max}
-                                      step={field.step}
-                                      value={settings[field.key] !== undefined ? settings[field.key] : field.default || 0}
-                                      onChange={e => {
-                                        const value = e.target.value;
-                                        if (value === '') {
-                                          handleChange(field.key, field.default || 0);
-                                        } else {
-                                          const numValue = parseInt(value, 10);
-                                          if (!isNaN(numValue)) {
-                                            handleChange(field.key, numValue);
-                                          }
-                                        }
-                                      }}
-                                      className="w-32"
-                                    />
-                                  )}
-                                  {field.type === 'time' && (
-                                    <Input
-                                      type="time"
-                                      id={`time-picker-${field.key}`}
-                                      step="1"
-                                      value={settings[field.key] || ''}
-                                      onChange={e => handleChange(field.key, e.target.value)}
-                                      className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
-                                    />
-                                  )}
-                                  {field.type === 'select' && (
-                                    <Select
-                                      value={settings[field.key] || field.default}
-                                      onValueChange={val => handleChange(field.key, val)}
-                                      options={field.options || []}
-                                    >
-                                      <SelectTrigger className="w-full">
-                                        <SelectValue placeholder={field.label} />
-                                      </SelectTrigger>
-                                      <SelectContent>
-                                        {field.options && field.options.map(opt => (
-                                          <SelectItem key={opt.value} value={opt.value}>
-                                            {opt.label}
-                                          </SelectItem>
-                                        ))}
-                                      </SelectContent>
-                                    </Select>
-                                  )}
-                                  {field.type === 'post_types' && (
-                                    <div className="space-y-2">
-                                      {postTypeOptions.map(opt => {
-                                        const checked = Array.isArray(settings[field.key]) && settings[field.key].includes(opt.value);
-                                        return (
-                                          <div key={opt.value} className="flex items-center gap-2">
-                                            <Switch
-                                              checked={checked}
-                                              onCheckedChange={val => {
-                                                setSettings(prev => {
-                                                  const safePrev = prev || {};
-                                                  const current = Array.isArray(safePrev[field.key]) ? safePrev[field.key] : [];
-                                                  return {
-                                                    ...safePrev,
-                                                    [field.key]: val
-                                                      ? [...current, opt.value]
-                                                      : current.filter((v: string) => v !== opt.value)
-                                                  };
-                                                });
-                                              }}
-                                              id={`switch-${field.key}-${opt.value}`}
-                                            />
-                                            <label htmlFor={`switch-${field.key}-${opt.value}`} className="text-sm cursor-pointer font-normal select-none">
-                                              {opt.label}
-                                            </label>
-                                          </div>
-                                        );
-                                      })}
-                                    </div>
-                                  )}
-                                  {field.description && (
-                                    <div className="text-xs text-muted-foreground mt-3">{field.description}</div>
-                                  )}
-                                </div>
-                              </div>
-                            );
-                          })}
+                          {section.fields.map((field, fidx) =>
+                            renderSchemaField(field, `sec-${sidx}-f${fidx}`)
+                          )}
                         </div>
                       )}
                       {(section.content && section.content.length > 0) && (

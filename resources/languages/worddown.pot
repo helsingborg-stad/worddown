@@ -1,15 +1,15 @@
-# Copyright (C) 2025 Adam Alexandersson
+# Copyright (C) 2026 Adam Alexandersson
 # This file is distributed under the GPL v3 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Worddown 1.0.0\n"
+"Project-Id-Version: Worddown 1.1.3\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/worddown\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-08-20T13:16:57+00:00\n"
+"POT-Creation-Date: 2026-04-14T10:34:51+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: worddown\n"
@@ -44,12 +44,12 @@ msgid "Settings"
 msgstr ""
 
 #: app/Admin/Settings.php:60
-#: config/settings.php:85
+#: config/settings.php:201
 msgid "Weekly"
 msgstr ""
 
 #. translators: %s is the adapter label
-#: app/Admin/Settings.php:357
+#: app/Admin/Settings.php:397
 #, php-format
 msgid "Include %s content in export"
 msgstr ""
@@ -75,337 +75,537 @@ msgid "No export to cancel"
 msgstr ""
 
 #. translators: %d is the total number of posts
-#: app/Export/Export.php:199
+#: app/Export/Export.php:141
 #, php-format
 msgid "Background export started for %d posts"
 msgstr ""
 
-#: app/Export/Export.php:249
+#: app/Export/Export.php:203
 msgid "Starting export..."
 msgstr ""
 
 #. translators: %1$d is the current chunk number, %2$d is the total number of chunks, %3$d is the number of posts in the current chunk
-#: app/Export/Export.php:284
+#: app/Export/Export.php:240
 #, php-format
 msgid "Processing chunk %1$d of %2$d (%3$d posts)"
 msgstr ""
 
-#: app/Export/Export.php:336
+#: app/Export/Export.php:297
 msgid "Export completed successfully"
 msgstr ""
 
-#: app/Export/Export.php:426
+#: app/Export/Export.php:390
 msgid "Export cancelled by user"
 msgstr ""
 
-#: config/settings.php:7
+#: config/settings.php:12
 msgid "General"
 msgstr ""
 
-#: config/settings.php:11
+#: config/settings.php:16
 msgid "Content to Export"
 msgstr ""
 
-#: config/settings.php:16
+#: config/settings.php:21
 msgid "Post Types"
 msgstr ""
 
-#: config/settings.php:17
+#: config/settings.php:22
 msgid "Select post types to export"
 msgstr ""
 
-#: config/settings.php:23
+#: config/settings.php:28
 msgid "Drafts"
 msgstr ""
 
-#: config/settings.php:24
+#: config/settings.php:29
 msgid "Include draft posts in export"
 msgstr ""
 
-#: config/settings.php:25
+#: config/settings.php:30
 msgid "This will include draft posts in the export."
 msgstr ""
 
-#: config/settings.php:31
+#: config/settings.php:36
 msgid "Private"
 msgstr ""
 
-#: config/settings.php:32
+#: config/settings.php:37
 msgid "Include private posts in export"
 msgstr ""
 
-#: config/settings.php:33
+#: config/settings.php:38
 msgid "This will include private posts in the export."
 msgstr ""
 
-#: config/settings.php:39
+#: config/settings.php:44
 msgid "Chunk Size"
 msgstr ""
 
-#: config/settings.php:40
+#: config/settings.php:45
 msgid "Number of posts to process in each batch during background exports. Lower values use less memory but take longer."
 msgstr ""
 
-#: config/settings.php:49
-msgid "Adapters (Page Builders, etc.)"
-msgstr ""
-
 #: config/settings.php:54
-msgid "Adapters"
+#: config/strings.php:51
+msgid "Metadata to include"
 msgstr ""
 
 #: config/settings.php:55
-msgid "Enable or disable adapters for export."
+#: config/strings.php:52
+msgid "Choose which meta fields to include at the top of each exported markdown file."
 msgstr ""
 
-#: config/settings.php:63
-msgid "Schedule"
+#: config/settings.php:60
+#: config/strings.php:53
+msgid "Date"
 msgstr ""
 
-#: config/settings.php:67
-msgid "WP Cron"
+#: config/settings.php:61
+#: config/strings.php:54
+msgid "Include publication date"
 msgstr ""
 
-#: config/settings.php:72
-msgid "Automatic Export"
+#: config/settings.php:62
+#: config/strings.php:55
+msgid "Adds the `date` field (Y-m-d H:i:s)."
 msgstr ""
 
-#: config/settings.php:73
-msgid "Run export automatically"
+#: config/settings.php:68
+#: config/strings.php:56
+msgid "Modified"
 msgstr ""
 
-#: config/settings.php:74
-msgid "This will run the export automatically."
+#: config/settings.php:69
+#: config/strings.php:57
+msgid "Include last modified date"
 msgstr ""
 
-#: config/settings.php:80
-msgid "Export Frequency"
+#: config/settings.php:70
+#: config/strings.php:58
+msgid "Adds the `modified` field (Y-m-d H:i:s)."
 msgstr ""
 
-#: config/settings.php:81
-msgid "How often to run the export"
+#: config/settings.php:76
+#: config/strings.php:59
+msgid "Slug"
 msgstr ""
 
-#: config/settings.php:83
-msgid "Hourly"
+#: config/settings.php:77
+#: config/strings.php:60
+msgid "Include post slug"
+msgstr ""
+
+#: config/settings.php:78
+#: config/strings.php:61
+msgid "Adds the `slug` field."
 msgstr ""
 
 #: config/settings.php:84
-msgid "Daily"
+#: config/strings.php:62
+msgid "Post ID"
+msgstr ""
+
+#: config/settings.php:85
+#: config/strings.php:63
+msgid "Include WordPress post ID"
+msgstr ""
+
+#: config/settings.php:86
+#: config/strings.php:64
+msgid "Adds the `id` field."
 msgstr ""
 
 #: config/settings.php:92
-msgid "Export Time"
+#: config/strings.php:65
+msgid "Post type"
 msgstr ""
 
 #: config/settings.php:93
-msgid "Time of day to run the export (server time)"
+#: config/strings.php:66
+msgid "Include post type"
 msgstr ""
 
-#: config/settings.php:99
-msgid "WP-CLI & Server Cron"
+#: config/settings.php:94
+#: config/strings.php:67
+msgid "Adds the `type` field."
 msgstr ""
 
 #: config/settings.php:100
-msgid "You can automate exports using WP-CLI and your server's crontab for better reliability and performance"
+#: config/strings.php:68
+msgid "Excerpt"
+msgstr ""
+
+#: config/settings.php:101
+#: config/strings.php:69
+msgid "Include excerpt"
+msgstr ""
+
+#: config/settings.php:102
+#: config/strings.php:70
+msgid "Adds the `excerpt` field."
+msgstr ""
+
+#: config/settings.php:108
+#: config/strings.php:71
+msgid "Permalink"
 msgstr ""
 
 #: config/settings.php:109
-msgid "You can automate exports using WP-CLI and your server's crontab for better reliability and performance. Use the --background flag for large exports to prevent timeouts."
+#: config/strings.php:72
+msgid "Include permalink URL"
+msgstr ""
+
+#: config/settings.php:110
+#: config/strings.php:73
+msgid "Adds the `permalink` field."
+msgstr ""
+
+#: config/settings.php:116
+#: config/strings.php:74
+msgid "Categories"
 msgstr ""
 
 #: config/settings.php:117
-msgid "API"
+#: config/strings.php:75
+msgid "Include category names"
 msgstr ""
 
-#: config/settings.php:121
-msgid "API Authentication"
+#: config/settings.php:118
+#: config/strings.php:76
+msgid "Adds the `category` field when the post has categories."
 msgstr ""
 
-#: config/settings.php:126
-msgid "API Key"
+#: config/settings.php:124
+#: config/strings.php:77
+msgid "Author"
 msgstr ""
 
-#: config/settings.php:127
-msgid "API key for accessing the Worddown API. Leave empty to only allow local access."
+#: config/settings.php:125
+#: config/strings.php:78
+msgid "Optional author metadata under `author`. Can expose personal or account data; only enable what you intend to publish."
+msgstr ""
+
+#: config/settings.php:131
+#: config/strings.php:79
+msgid "Username"
+msgstr ""
+
+#: config/settings.php:132
+#: config/strings.php:80
+msgid "Include login name"
 msgstr ""
 
 #: config/settings.php:133
-msgid "Available Endpoints"
+#: config/strings.php:81
+msgid "Adds `author.username`. May expose account identifiers if files are shared."
 msgstr ""
 
 #: config/settings.php:139
-msgid "List all exported markdown files with metadata"
+#: config/strings.php:82
+msgid "Display name"
 msgstr ""
 
-#: config/settings.php:145
-msgid "Get markdown content of a specific file by post ID"
+#: config/settings.php:140
+#: config/strings.php:83
+msgid "Include display name"
 msgstr ""
 
-#: config/settings.php:151
-msgid "Trigger a new export operation. Use background=true for large exports"
+#: config/settings.php:141
+#: config/strings.php:84
+msgid "Adds `author.name` (WordPress display name)."
+msgstr ""
+
+#: config/settings.php:147
+#: config/strings.php:85
+msgid "Email"
+msgstr ""
+
+#: config/settings.php:148
+#: config/strings.php:86
+msgid "Include email address"
+msgstr ""
+
+#: config/settings.php:149
+#: config/strings.php:87
+msgid "Adds `author.email`. Sensitive: can end up in git, backups, or public URLs."
+msgstr ""
+
+#: config/settings.php:155
+#: config/strings.php:88
+msgid "Role slugs"
 msgstr ""
 
 #: config/settings.php:156
+#: config/strings.php:89
+msgid "Include WordPress role slugs"
+msgstr ""
+
+#: config/settings.php:157
+#: config/strings.php:90
+msgid "Adds `author.roles` (list of WordPress role slugs)."
+msgstr ""
+
+#: config/settings.php:165
+msgid "Adapters (Page Builders, etc.)"
+msgstr ""
+
+#: config/settings.php:170
+msgid "Adapters"
+msgstr ""
+
+#: config/settings.php:171
+msgid "Enable or disable adapters for export."
+msgstr ""
+
+#: config/settings.php:179
+msgid "Schedule"
+msgstr ""
+
+#: config/settings.php:183
+msgid "WP Cron"
+msgstr ""
+
+#: config/settings.php:188
+msgid "Automatic Export"
+msgstr ""
+
+#: config/settings.php:189
+msgid "Run export automatically"
+msgstr ""
+
+#: config/settings.php:190
+msgid "This will run the export automatically."
+msgstr ""
+
+#: config/settings.php:196
+msgid "Export Frequency"
+msgstr ""
+
+#: config/settings.php:197
+msgid "How often to run the export"
+msgstr ""
+
+#: config/settings.php:199
+msgid "Hourly"
+msgstr ""
+
+#: config/settings.php:200
+msgid "Daily"
+msgstr ""
+
+#: config/settings.php:208
+msgid "Export Time"
+msgstr ""
+
+#: config/settings.php:209
+msgid "Time of day to run the export (server time)"
+msgstr ""
+
+#: config/settings.php:215
+msgid "WP-CLI & Server Cron"
+msgstr ""
+
+#: config/settings.php:216
+msgid "You can automate exports using WP-CLI and your server's crontab for better reliability and performance"
+msgstr ""
+
+#: config/settings.php:225
+msgid "You can automate exports using WP-CLI and your server's crontab for better reliability and performance. Use the --background flag for large exports to prevent timeouts."
+msgstr ""
+
+#: config/settings.php:233
+msgid "API"
+msgstr ""
+
+#: config/settings.php:237
+msgid "API Authentication"
+msgstr ""
+
+#: config/settings.php:242
+msgid "API Key"
+msgstr ""
+
+#: config/settings.php:243
+msgid "API key for accessing the Worddown API. Leave empty to only allow local access."
+msgstr ""
+
+#: config/settings.php:249
+msgid "Available Endpoints"
+msgstr ""
+
+#: config/settings.php:255
+msgid "List all exported markdown files with metadata"
+msgstr ""
+
+#: config/settings.php:261
+msgid "Get markdown content of a specific file by post ID"
+msgstr ""
+
+#: config/settings.php:267
+msgid "Trigger a new export operation. Use background=true for large exports"
+msgstr ""
+
+#: config/settings.php:272
 msgid "Example Usage (cURL)"
 msgstr ""
 
-#: config/strings.php:7
+#: config/strings.php:11
 msgid "Exported Files"
 msgstr ""
 
-#: config/strings.php:8
+#: config/strings.php:12
 msgid "Editing:"
 msgstr ""
 
-#: config/strings.php:9
+#: config/strings.php:13
 msgid "Failed to load dashboard data."
 msgstr ""
 
-#: config/strings.php:10
+#: config/strings.php:14
 msgid "Export completed successfully!"
 msgstr ""
 
-#: config/strings.php:11
+#: config/strings.php:15
 msgid "Export failed."
 msgstr ""
 
-#: config/strings.php:12
+#: config/strings.php:16
 msgid "Export failed to start."
 msgstr ""
 
-#: config/strings.php:13
+#: config/strings.php:17
 msgid "Never"
 msgstr ""
 
-#: config/strings.php:14
+#: config/strings.php:18
 msgid "Last Export"
 msgstr ""
 
-#: config/strings.php:15
+#: config/strings.php:19
 msgid "Enabled"
 msgstr ""
 
-#: config/strings.php:16
+#: config/strings.php:20
 msgid "Disabled"
 msgstr ""
 
-#: config/strings.php:17
+#: config/strings.php:21
 msgid "Auto Export"
 msgstr ""
 
-#: config/strings.php:18
+#: config/strings.php:22
 msgid "Exported files by Post Type"
 msgstr ""
 
-#: config/strings.php:19
+#: config/strings.php:23
 msgid "Exported files"
 msgstr ""
 
-#: config/strings.php:20
+#: config/strings.php:24
 msgid "Export Now"
 msgstr ""
 
-#: config/strings.php:21
+#: config/strings.php:25
 msgid "files exported"
 msgstr ""
 
-#: config/strings.php:22
+#: config/strings.php:26
 msgid "Next Scheduled Export:"
 msgstr ""
 
-#: config/strings.php:23
+#: config/strings.php:27
 msgid "Exporting..."
 msgstr ""
 
-#: config/strings.php:24
+#: config/strings.php:28
 msgid "Start a manual export of all content based on your current settings."
 msgstr ""
 
-#: config/strings.php:25
+#: config/strings.php:29
 msgid "Export Information"
 msgstr ""
 
-#: config/strings.php:26
+#: config/strings.php:30
 msgid "Export Directory:"
 msgstr ""
 
-#: config/strings.php:27
+#: config/strings.php:31
 msgid "Directory exists and is writable"
 msgstr ""
 
-#: config/strings.php:28
+#: config/strings.php:32
 msgid "Directory does not exist or is not writable"
 msgstr ""
 
-#: config/strings.php:29
+#: config/strings.php:33
 msgid "File Format:"
 msgstr ""
 
-#: config/strings.php:30
+#: config/strings.php:34
 msgid "Saving..."
 msgstr ""
 
-#: config/strings.php:31
+#: config/strings.php:35
 msgid "Save Settings"
 msgstr ""
 
-#: config/strings.php:32
+#: config/strings.php:36
 msgid "Settings saved!"
 msgstr ""
 
-#: config/strings.php:33
+#: config/strings.php:37
 msgid "Failed to save settings."
 msgstr ""
 
-#: config/strings.php:34
+#: config/strings.php:38
 msgid "Export started successfully!"
 msgstr ""
 
-#: config/strings.php:35
+#: config/strings.php:39
 msgid "Export was cancelled."
 msgstr ""
 
-#: config/strings.php:36
+#: config/strings.php:40
 msgid "Export cancelled successfully."
 msgstr ""
 
-#: config/strings.php:37
+#: config/strings.php:41
 msgid "Failed to cancel export."
 msgstr ""
 
-#: config/strings.php:38
+#: config/strings.php:42
 msgid "Cancel Export"
 msgstr ""
 
-#: config/strings.php:39
+#: config/strings.php:43
 msgid "Export in progress..."
 msgstr ""
 
-#: config/strings.php:40
+#: config/strings.php:44
 msgid "Total Posts"
 msgstr ""
 
-#: config/strings.php:41
+#: config/strings.php:45
 msgid "Exported"
 msgstr ""
 
-#: config/strings.php:42
+#: config/strings.php:46
 msgid "Failed"
 msgstr ""
 
-#: config/strings.php:43
+#: config/strings.php:47
 msgid "Estimated completion:"
 msgstr ""
 
-#: config/strings.php:44
+#: config/strings.php:48
 msgid "Export is running in the background. You can safely close this page."
 msgstr ""
 
-#: config/strings.php:45
+#: config/strings.php:49
 msgid "Start a background export of all content based on your current settings."
 msgstr ""
 
-#: config/strings.php:46
+#: config/strings.php:50
 msgid "Supported adapters will be shown here automatically when they are available."
 msgstr ""

@@ -490,21 +490,72 @@ class Export
         // Convert HTML to Markdown
         $markdown_content = $this->markdownConverter->htmlToMarkdown($content);
         
-        // Build meta data array
-        $metaData = [
-            'date' => $date,
-            'modified' => $modified,
-            'slug' => $slug,
-            'id' => $post_id,
-            'type' => $post_type,
-            'excerpt' => $excerpt,
-            'permalink' => $permalink,
-        ];
-        if (!empty($category_names)) {
+        $metaData = [];
+        $settings = $this->settings;
+
+        if (!empty($settings::get('export_meta_date', true))) {
+            $metaData['date'] = $date;
+        }
+        if (!empty($settings::get('export_meta_modified', true))) {
+            $metaData['modified'] = $modified;
+        }
+        if (!empty($settings::get('export_meta_slug', true))) {
+            $metaData['slug'] = $slug;
+        }
+        if (!empty($settings::get('export_meta_id', true))) {
+            $metaData['id'] = $post_id;
+        }
+        if (!empty($settings::get('export_meta_type', true))) {
+            $metaData['type'] = $post_type;
+        }
+        if (!empty($settings::get('export_meta_excerpt', true))) {
+            $metaData['excerpt'] = $excerpt;
+        }
+        if (!empty($settings::get('export_meta_permalink', true))) {
+            $metaData['permalink'] = $permalink;
+        }
+        if (!empty($category_names) && !empty($settings::get('export_meta_category', true))) {
             $metaData['category'] = $category_names;
         }
-        
+
+        $author = $this->buildAuthorMetaData((int) $post->post_author);
+        if (!empty($author)) {
+            $metaData['author'] = $author;
+        }
+
         return $this->formatMarkdownFile($title, $metaData, $markdown_content);
+    }
+
+    /**
+     * Builds the author block for YAML front matter when any author field is enabled.
+     *
+     * @param int $author_id Post author user ID
+     * @return array<string, mixed>
+     */
+    private function buildAuthorMetaData(int $author_id): array
+    {
+        $user = get_userdata($author_id);
+        if (!$user) {
+            return [];
+        }
+
+        $s = $this->settings;
+        $author = [];
+
+        if (!empty($s::get('export_meta_author_username', false))) {
+            $author['username'] = $user->user_login;
+        }
+        if (!empty($s::get('export_meta_author_name', false))) {
+            $author['name'] = $user->display_name;
+        }
+        if (!empty($s::get('export_meta_author_email', false))) {
+            $author['email'] = $user->user_email;
+        }
+        if (!empty($s::get('export_meta_author_roles', false))) {
+            $author['roles'] = array_values($user->roles);
+        }
+
+        return $author;
     }
 
     /**

@@ -84,6 +84,18 @@ Yes, Worddown works with WordPress multisite installations. You can use the --ur
 
 For large sites, we recommend using either the background mode via WP-CLI (`wp worddown export --background`) or the REST API with the background parameter enabled.
 
+= How do I update translations or fix missing strings? =
+
+Translations for plugins hosted on WordPress.org are delivered as **language packs** (files under `wp-content/languages/plugins/`). WordPress checks for newer packs when you check for updates.
+
+* **Dashboard:** Go to *Dashboard → Updates* and use **Update translations** (when WordPress offers it), or update plugins/themes and let WordPress refresh translations in the same flow.
+* **WP-CLI:** Run `wp language plugin update worddown` (or `wp language core update` to refresh all language data).
+* **Automatic updates:** By default, WordPress can install translation updates in the background (`WP_AUTO_UPDATE_TRANSLATION` is true unless your host disables it).
+
+New or changed strings appear in language packs after translators update them on [translate.wordpress.org](https://translate.wordpress.org/). You cannot force that from inside the plugin; releasing a new plugin version makes new strings available for translators, and updated `.mo` files reach sites through the normal translation update process.
+
+If you use **Loco Translate** or placed a **custom** `worddown-*.mo` in `wp-content/languages/plugins/`, that file overrides the pack until you **re-sync** in Loco or **delete** the override so WordPress can download the current pack again.
+
 == Changelog ==
 
 = 1.1.3
