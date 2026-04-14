@@ -217,6 +217,9 @@ This plugin is licensed under the GPL v2 or later.
 
 ## Changelog
 
+### 1.1.4
+- Added configurable meta data and optional author metadata: Allow per-field toggles for standard YAML keys and an optional nested author block (username, display name, email, roles). Add field_group support in settings UI; merge defaults for REST; keep schema in sync with setConfig.
+
 ### 1.1.3
 - Add before/after export hooks to adapter. The Modularity adapter now uses these hooks for pre/post processing, reducing coupling and keeping the core exporter generic.
 

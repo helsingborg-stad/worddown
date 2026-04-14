@@ -84,6 +84,7 @@ class Settings
      * Flatten nested field_group entries into a key => field map (leaf fields only).
      *
      * @param array<int, array<string, mixed>> $fields
+     * @since 1.1.4
      * @return array<string, array<string, mixed>>
      */
     private function flattenFieldDefinitions(array $fields): array
@@ -105,6 +106,7 @@ class Settings
      * Collect default values from a field tree (handles field_group nesting).
      *
      * @param array<string, mixed> $field
+     * @since 1.1.4
      * @return array<string, mixed>
      */
     private function collectDefaultFields(array $field): array
@@ -441,6 +443,7 @@ class Settings
      * still resolve for the REST UI (e.g. booleans defaulting to true).
      *
      * @return array<string, mixed>
+     * @since 1.1.4
      */
     private function getSettingsMergedWithDefaults(): array
     {

@@ -530,6 +530,7 @@ class Export
      * Builds the author block for YAML front matter when any author field is enabled.
      *
      * @param int $author_id Post author user ID
+     * @since 1.1.4
      * @return array<string, mixed>
      */
     private function buildAuthorMetaData(int $author_id): array
